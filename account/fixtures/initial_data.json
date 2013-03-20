@@ -1,0 +1,34 @@
+[
+    {
+        "pk": 3,
+        "model": "account.userinfoattr",
+        "fields": {
+            "key": "celular",
+            "label": "Celular"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "account.userinfoattr",
+        "fields": {
+            "key": "email",
+            "label": "Email"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "account.userinfoattr",
+        "fields": {
+            "key": "ramal",
+            "label": "Ramal"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "account.userinfoattr",
+        "fields": {
+            "key": "telefone",
+            "label": "Telefone"
+        }
+    }
+]
