@@ -1,0 +1,83 @@
+[
+   {
+      "pk": 1,
+      "model": "base.department",
+      "fields": {
+         "description": "",
+         "name": "Recursos Humanos",
+         "slug": "rh"
+      }
+   },
+   {
+      "pk": 2,
+      "model": "base.department",
+      "fields": {
+         "description": "",
+         "name": "Marketing",
+         "slug": "marketing"
+      }
+   },
+   {
+      "pk": 3,
+      "model": "base.department",
+      "fields": {
+         "description": "",
+         "name": "Comercial",
+         "slug": "comercial"
+      }
+   },
+   {
+      "pk": 4,
+      "model": "base.department",
+      "fields": {
+         "description": "",
+         "name": "TI",
+         "slug": "ti"
+      }
+   },
+   {
+      "pk": 5,
+      "model": "base.department",
+      "fields": {
+         "description": "",
+         "name": "Fianceiro",
+         "slug": "fianceiro"
+      }
+   },
+   {
+      "pk": 1,
+      "model": "base.role",
+      "fields": {
+         "description": "",
+         "name": "Desenvolvedor",
+         "slug": "desenvolvedor"
+      }
+   },
+   {
+      "pk": 2,
+      "model": "base.role",
+      "fields": {
+         "description": "",
+         "name": "Designer",
+         "slug": "designer"
+      }
+   },
+   {
+      "pk": 3,
+      "model": "base.role",
+      "fields": {
+         "description": "",
+         "name": "Coordenador",
+         "slug": "coordenador"
+      }
+   },
+   {
+      "pk": 4,
+      "model": "base.role",
+      "fields": {
+         "description": "",
+         "name": "Gerente",
+         "slug": "gerente"
+      }
+   }
+]

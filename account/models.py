@@ -38,6 +38,16 @@ class UserProfile(models.Model):
 			return ACCOUNT_ANONYMOUS_NAME
 		return (u'%s %s' % (self.user.first_name, self.user.last_name)) if self.user.first_name else self.user.username
 
+	def get_info(self, key=None):
+		if not key:
+			return self.information.all().order_by('order')
+		data    = self.information.filter(label__key=key).order_by('order').values_list('value', flat=True)
+		rtn     = []
+		if key == 'email' and self.user.email:
+			rtn.append(self.user.email)
+		rtn.extend(data)
+		return rtn
+
 	def __unicode__(self):
 		return self.user.__unicode__()
 

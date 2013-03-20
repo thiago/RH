@@ -1,0 +1,117 @@
+# -- coding: utf-8 --
+from django.contrib import admin
+from django.contrib.admin import helpers
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
+from django.core import mail
+from django.http import HttpResponse
+from django.template.base import Template, Context
+from django.views.generic.base import TemplateResponse
+from django.utils import simplejson
+
+from .models import *
+
+import copy, json
+
+DEFAULT_EMAIL                           = {}
+DEFAULT_EMAIL['subject']                = 'RH - {{ site.name }}'
+DEFAULT_EMAIL['from_email']             = 'rh@example.com'
+DEFAULT_EMAIL['message']                = """Olá {{ obj.user.username }}, <br />
+Este é o template padrão de email enviado via RH app Django.
+"""
+
+class NoteInline(admin.TabularInline):
+	model 		= Note
+	extra		= 1
+
+class ProfessionalProfileAdmin(admin.ModelAdmin):
+	list_display 						= ['id','user_profile_admin', 'department', 'role']
+	list_display_links 					= ['id']
+	ordering 							= ['user', 'department', 'role']
+	search_fields 						= ['user__username', 'user__first_name', 'user__last_name', 'department__name', 'role__name']
+	list_filter 						= ['user', 'department', 'role']
+	actions 							= ['admin_send_email']
+	inlines 	                        = [NoteInline,]
+
+	def changelist_view(self, request, extra_context=None):
+		def parsePost():
+			try:
+				json_data = simplejson.loads(request.raw_post_data)
+				return json_data
+			except:
+				return None
+		print parsePost()
+		if request.method == 'POST' and parsePost():
+			data = parsePost()
+			if data['action'] == 'admin_send_email' and data['_selected_action']:
+				queryset = self.model.objects.filter(pk__in = data['_selected_action'])
+				return self.admin_send_email(request, queryset, data)
+
+		return super(ProfessionalProfileAdmin, self).changelist_view(request, extra_context=extra_context)
+
+	def admin_send_email(self, request, queryset, data=None):
+		print queryset, data
+
+		context = Context({
+			'action_name'           : 'admin_send_email',
+			'action_checkbox_name'  : helpers.ACTION_CHECKBOX_NAME,
+			'title'                 : "Enviar Email",
+			'default'               : DEFAULT_EMAIL,
+			'queryset'              : queryset,
+		    'opts'                  : self.model._meta,
+			'content_type_id'       : ContentType.objects.get_for_model(self.model).id,
+		    'site'                  : Site.objects.get_current()
+		})
+		if data:
+			messages            = []
+			connection          = mail.get_connection()
+			for obj in queryset:
+				email_list          = obj.user.profile.get_info('email')
+				if email_list:
+					if data.has_key('custom') and data['custom'].has_key(str(obj.pk)) and data['custom'][str(obj.pk)].keys():
+						current         = data['custom'][str(obj.pk)]
+						subject         = current['subject']
+						from_email      = current['from_email']
+						to              = current['to']
+						message         = current['message']
+					else:
+						subject         = DEFAULT_EMAIL['subject']
+						from_email      = DEFAULT_EMAIL['from_email']
+						to              = [email_list[0],]
+						message         = DEFAULT_EMAIL['message']
+
+					current_context     = copy.copy(context)
+					current_context.update({
+						'obj': self.model
+					})
+					subject             = Template(subject).render(current_context)
+					from_email          = Template(from_email).render(current_context)
+					message             = Template(message).render(current_context)
+					current_mail        = mail.EmailMessage(subject, message, from_email, to)
+					current_mail.content_subtype = 'html'
+					messages.append(current_mail)
+
+			response_data                   = {}
+			try:
+				connection.open()
+				connection.send_messages(messages)
+				connection.close()
+				response_data['status']         = 'success'
+			except:
+				response_data['status']             = 'error'
+				response_data['message']            = 'Ocorreu um erro durante o envio dos emails'
+
+			return HttpResponse(json.dumps(response_data), mimetype="application/json")
+
+		return TemplateResponse(request, 'admin/professionalprofile/send_email.html', context, current_app=self.admin_site.name)
+	admin_send_email.short_description = "Enviar Email(s)"
+
+class DepartamentAdmin(admin.ModelAdmin):
+	prepopulated_fields 				= {'slug': ('name',)}
+
+class RoleAdmin(admin.ModelAdmin):
+	prepopulated_fields 				= {'slug': ('name',)}
+
+admin.site.register(ProfessionalProfile, ProfessionalProfileAdmin)
+admin.site.register(Department, DepartamentAdmin)
+admin.site.register(Role, RoleAdmin)

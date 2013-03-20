@@ -77,9 +77,6 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-FIXTURE_DIRS	= (
-	'account/fixtures'
-)
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'gu0)hl7a-bs$y&amp;gi@ewi6p-*81=2kow^vu@+kk@q-$n5(4(ei)'
 
@@ -105,11 +102,7 @@ ROOT_URLCONF = 'RH.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'RH.wsgi.application'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
+TEMPLATE_DIRS = ('templates')
 
 INSTALLED_APPS = (
     'django.contrib.auth',
