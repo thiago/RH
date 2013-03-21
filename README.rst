@@ -5,15 +5,18 @@ Instalação::
 
     git clone git@github.com:trsouz/RH.git
     pip install -r requirements.txt
-    ./manage.py syncdb
-    ./manage.py runserver
+    cd RH
+    python manage.py syncdb
+    python manage.py runserver
 
 Novidades
 =========
 
 Perfil Profissional
 -------------------
+
 Enviar e customizar templates de emails diretamente no "Action" da listagem do admin Django.
+
  - Altere o template padrão e depois customize o template do(s) usuários desejado.
 
 Account
