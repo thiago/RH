@@ -39,12 +39,11 @@ class ProfessionalProfile(models.Model):
 	role            = models.ForeignKey(Role)
 	user            = models.ForeignKey(User, unique=True)
 
+	def user_profile(self):
+		return self.user.profile.admin_display_related()
 
-	def user_profile_admin(self):
-		return "<span class='errors'>I can't determine this address.</span>"
-
-	user_profile_admin.short_description = "Usuário"
-	user_profile_admin.allow_tags = True
+	user_profile.short_description = "Usuário"
+	user_profile.allow_tags = True
 
 	def __unicode__(self):
 		return self.user.__unicode__()

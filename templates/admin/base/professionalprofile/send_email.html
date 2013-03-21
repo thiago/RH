@@ -21,7 +21,7 @@
                     {
                         id: {{ obj.pk }},
                         full_name: "{{ obj.user.profile.get_full_name }}",
-                        emails: [{% for email in obj.user|get_info:'email' %}'{{ email }}'{% if not forloop.last %},{% endif %}{% endfor %}]
+                        emails: [{% for email in obj.user|get_info_flat:'email' %}'{{ email }}'{% if not forloop.last %},{% endif %}{% endfor %}]
                     }
 					{% if not forloop.last %},{% endif %}
 				{% endfor %}

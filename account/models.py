@@ -4,6 +4,7 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.signals import post_save
+from django.template.loader import render_to_string
 
 from sorl.thumbnail import ImageField, get_thumbnail
 
@@ -25,7 +26,11 @@ class UserProfile(models.Model):
 			size				= 	ACCOUNT_SIZES[ACCOUNT_SIZE_DEFAULT] if ACCOUNT_SIZES.has_key(ACCOUNT_SIZE_DEFAULT) else ACCOUNT_SIZES[list(ACCOUNT_SIZES)[0]]
 		size_string			= '%d' % size[0] if size[0] > 0 else ''
 		size_string			+= 'x%d' % size[1] if size[1] > 0 else ''
-		image				= get_thumbnail(image_url, size_string, crop='center').url
+		try:
+			image				= get_thumbnail(image_url, size_string, crop='center').url
+		except IOError:
+			image               = settings.MEDIA_URL + image_url
+
 		return image
 
 	@property
@@ -38,15 +43,31 @@ class UserProfile(models.Model):
 			return ACCOUNT_ANONYMOUS_NAME
 		return (u'%s %s' % (self.user.first_name, self.user.last_name)) if self.user.first_name else self.user.username
 
-	def get_info(self, key=None):
-		if not key:
-			return self.information.all().order_by('order')
-		data    = self.information.filter(label__key=key).order_by('order').values_list('value', flat=True)
+	def get_info(self, key=None, order='order', flat=False):
 		rtn     = []
-		if key == 'email' and self.user.email:
-			rtn.append(self.user.email)
+		if (not key or key == 'email') and self.user.email:
+			if not flat:
+				primary_email           = {}
+				primary_email['label']  = 'Email'
+				primary_email['value']  = self.user.email
+				rtn.append(primary_email)
+			else:
+				rtn.append(self.user.email)
+
+		data    = self.information.all() if not key else self.information.filter(label__key=key)
+		data    = data.order_by(order)
+		if flat:
+			data        = data.values_list('value', flat=True)
 		rtn.extend(data)
 		return rtn
+
+	def admin_display_related(self):
+		return render_to_string("admin/account/profile_display_related.html", {
+			'profile' : self
+		})
+
+	admin_display_related.short_description = "Usuário"
+	admin_display_related.allow_tags = True
 
 	def __unicode__(self):
 		return self.user.__unicode__()
@@ -64,7 +85,7 @@ class UserInfoAttr(models.Model):
 	key						= models.SlugField(max_length=60)
 
 	def __unicode__(self):
-		return self.key
+		return self.label
 
 	def __str__(self):
 		return self.label

@@ -1,0 +1,18 @@
+{% load account_tags %}
+<div class="media">
+	<input type="button" class="bt-sendEmail pull-right" data-id="{{ profile.pk }}" value="Enviar email" {% if not profile.user|get_info:'email' %}disabled="disabled"{% endif %}>
+	<span class="pull-left">
+		<img class="media-object" src="{{ profile.user|get_avatar }}">
+	</span>
+	<div class="media-body">
+		<h4 class="media-heading">{{ profile.get_full_name }}</h4>
+		<p>
+		    {% if profile.biograpy %}
+			    {{ profile.biograpy|truncatewords_html:'5' }} <br>
+		    {% endif %}
+			{% for info in profile.user|get_info|slice:':2' %}
+				<b>{{ info.label }}</b>: {{ info.value }}<br>
+			{% endfor %}
+		</p>
+	</div>
+</div>

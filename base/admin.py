@@ -13,6 +13,15 @@ from .models import *
 
 import copy, json
 
+
+from autocomplete.views import autocomplete, AutocompleteSettings
+from autocomplete.admin import AutocompleteAdmin
+
+class UserAutocomplete(AutocompleteSettings):
+	search_fields = ('^username', '^email')
+
+autocomplete.register(ProfessionalProfile.user, UserAutocomplete)
+
 DEFAULT_EMAIL                           = {}
 DEFAULT_EMAIL['subject']                = 'RH - {{ site.name }}'
 DEFAULT_EMAIL['from_email']             = 'rh@example.com'
@@ -24,14 +33,19 @@ class NoteInline(admin.TabularInline):
 	model 		= Note
 	extra		= 1
 
-class ProfessionalProfileAdmin(admin.ModelAdmin):
-	list_display 						= ['id','user_profile_admin', 'department', 'role']
+class ProfessionalProfileAdmin(AutocompleteAdmin, admin.ModelAdmin):
+	list_display 						= ['id','user_profile', 'department', 'role']
 	list_display_links 					= ['id']
 	ordering 							= ['user', 'department', 'role']
 	search_fields 						= ['user__username', 'user__first_name', 'user__last_name', 'department__name', 'role__name']
 	list_filter 						= ['user', 'department', 'role']
 	actions 							= ['admin_send_email']
 	inlines 	                        = [NoteInline,]
+
+	class Media:
+		css = {
+			"all": ("RH/admin/css/style.css",)
+		}
 
 	def changelist_view(self, request, extra_context=None):
 		def parsePost():
@@ -40,7 +54,7 @@ class ProfessionalProfileAdmin(admin.ModelAdmin):
 				return json_data
 			except:
 				return None
-		print parsePost()
+
 		if request.method == 'POST' and parsePost():
 			data = parsePost()
 			if data['action'] == 'admin_send_email' and data['_selected_action']:
@@ -50,8 +64,6 @@ class ProfessionalProfileAdmin(admin.ModelAdmin):
 		return super(ProfessionalProfileAdmin, self).changelist_view(request, extra_context=extra_context)
 
 	def admin_send_email(self, request, queryset, data=None):
-		print queryset, data
-
 		context = Context({
 			'action_name'           : 'admin_send_email',
 			'action_checkbox_name'  : helpers.ACTION_CHECKBOX_NAME,
@@ -103,7 +115,7 @@ class ProfessionalProfileAdmin(admin.ModelAdmin):
 
 			return HttpResponse(json.dumps(response_data), mimetype="application/json")
 
-		return TemplateResponse(request, 'admin/professionalprofile/send_email.html', context, current_app=self.admin_site.name)
+		return TemplateResponse(request, 'admin/base/professionalprofile/send_email.html', context, current_app=self.admin_site.name)
 	admin_send_email.short_description = "Enviar Email(s)"
 
 class DepartamentAdmin(admin.ModelAdmin):
