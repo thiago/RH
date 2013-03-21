@@ -11,12 +11,16 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'project.db',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',
+    # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'project.db',
+    # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'HOST': '',
+    # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',
+    # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -55,7 +59,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-#STATIC_ROOT = 'static'
+# STATIC_ROOT = 'static'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -63,7 +67,7 @@ STATIC_URL = '/static/'
 AUTOCOMPLETE_MEDIA_PREFIX = STATIC_URL + 'autocomplete/media/'
 # Additional locations of static files
 STATICFILES_DIRS = (
-    ("static","static")
+    ("static", "static")
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
@@ -73,7 +77,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -83,7 +87,7 @@ SECRET_KEY = 'gu0)hl7a-bs$y&amp;gi@ewi6p-*81=2kow^vu@+kk@q-$n5(4(ei)'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -112,17 +116,17 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'django.contrib.admin',
-	'sorl.thumbnail',
-	'account',
+    'sorl.thumbnail',
+    'account',
     'base',
     'autocomplete',
 )
 
-EMAIL_USE_TLS       = True
-EMAIL_HOST          = 'smtp.gmail.com'
-EMAIL_HOST_USER     = ''
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
-EMAIL_PORT          = 587
+EMAIL_PORT = 587
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -154,6 +158,6 @@ LOGGING = {
 }
 
 try:
-	from local_settings import *
+    from local_settings import *
 except ImportError:
-	pass
+    pass
