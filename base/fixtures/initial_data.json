@@ -79,5 +79,50 @@
          "name": "Gerente",
          "slug": "gerente"
       }
+   },
+   {
+      "pk": 5,
+      "model": "base.role",
+      "fields": {
+         "description": "",
+         "name": "Analista",
+         "slug": "analista"
+      }
+   },
+   {
+      "pk": 1,
+      "model": "base.professionalprofile",
+      "fields": {
+         "department": 1,
+         "role": 3,
+         "user": 3
+      }
+   },
+   {
+      "pk": 2,
+      "model": "base.professionalprofile",
+      "fields": {
+         "department": 2,
+         "role": 4,
+         "user": 2
+      }
+   },
+   {
+      "pk": 3,
+      "model": "base.professionalprofile",
+      "fields": {
+         "department": 5,
+         "role": 5,
+         "user": 4
+      }
+   },
+   {
+      "pk": 4,
+      "model": "base.professionalprofile",
+      "fields": {
+         "department": 1,
+         "role": 4,
+         "user": 5
+      }
    }
 ]
