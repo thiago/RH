@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.http import HttpResponse
-from django.template.base import Template, Context
+from django.template.base import Template, RequestContext
 from django.views.generic.base import TemplateResponse
 from django.utils import simplejson
 
@@ -22,7 +22,15 @@ from autocomplete.admin import AutocompleteAdmin
 class UserAutocomplete(AutocompleteSettings):
     search_fields = ('^username', '^email')
 
+class DepartamentAutocomplete(AutocompleteSettings):
+    search_fields = ('^name', '^slug', '^description')
+
+class RoleAutocomplete(AutocompleteSettings):
+	search_fields = ('^name', '^slug', '^description')
+
 autocomplete.register(ProfessionalProfile.user, UserAutocomplete)
+autocomplete.register(ProfessionalProfile.department, DepartamentAutocomplete)
+autocomplete.register(ProfessionalProfile.role, RoleAutocomplete)
 
 DEFAULT_EMAIL = {}
 DEFAULT_EMAIL['subject'] = 'RH - {{ site.name }}'
@@ -74,7 +82,7 @@ class ProfessionalProfileAdmin(AutocompleteAdmin, admin.ModelAdmin):
         return super(ProfessionalProfileAdmin, self).changelist_view(request, extra_context=extra_context)
 
     def admin_send_email(self, request, queryset, data=None):
-        context = Context({
+        context = RequestContext(request, {
             'action_name': 'admin_send_email',
             'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
             'title': "Enviar Email",
@@ -89,7 +97,7 @@ class ProfessionalProfileAdmin(AutocompleteAdmin, admin.ModelAdmin):
             messages = []
             connection = mail.get_connection()
             for obj in queryset:
-                email_list = obj.user.profile.get_info('email')
+                email_list = obj.user.profile.get_info('email', flat=True)
                 if email_list:
                     if 'custom' in data and str(obj.pk) in data['custom'] and data['custom'][str(obj.pk)].keys():
                         current = data['custom'][str(obj.pk)]
@@ -136,11 +144,11 @@ class ProfessionalProfileAdmin(AutocompleteAdmin, admin.ModelAdmin):
     admin_send_email.short_description = "Enviar Email(s)"
 
 
-class DepartamentAdmin(admin.ModelAdmin):
+class DepartamentAdmin(AutocompleteAdmin, admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-class RoleAdmin(admin.ModelAdmin):
+class RoleAdmin(AutocompleteAdmin, admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 admin.site.register(ProfessionalProfile, ProfessionalProfileAdmin)

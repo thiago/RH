@@ -69,7 +69,8 @@ class UserProfile(models.Model):
 
     def admin_display_related(self):
         return render_to_string("admin/account/profile_display_related.html", {
-            'profile': self
+            'profile': self,
+            'opts': self._meta
         })
 
     admin_display_related.short_description = "Usuário"

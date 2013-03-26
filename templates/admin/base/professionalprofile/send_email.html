@@ -4,6 +4,7 @@
 {% load admin_urls account_tags %}
 
 {% block extrahead %}
+    {{ block.super }}
 	<script type="text/javascript" src="{% static 'admin/js/jquery.js' %}"></script>
 	<script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
 	<script type="text/javascript" src="{% static 'RH/libs/angular.min.js' %}"></script>
@@ -75,10 +76,11 @@
 			$scope.submit           = function(){
 				$scope.status           = 'loading';
 				$http.post('/admin/base/professionalprofile/', this.attributes).success(function(data){
-					$scope.status           = 'complete';
-				}).error(function(data){
-							$scope.status           = 'error';
-						});
+					$scope.status           = data.status;
+                    if(data.status == 'error'){
+                        alert(data.message || 'Ocorreu um erro durante o envio');
+                    }
+				})
 			};
 			$scope.hasInTo    = function(obj, current_email){
 				var rtn             = false;
@@ -121,8 +123,8 @@
 
 {% block content %}
 	<div ng-controller="SendEmailForm" ng-app="AdminRH" class="ng-scope">
-		<form ng-show="status != 'complete'" ng-submit="submit()" method="post" name="formPainel" class="ng-dirty ng-valid ng-valid-required">
-			<div style="display:none"><input type="hidden" value="6KoaT0DVJpfYN4gi4TojeRel7g9rTi17" name="csrfmiddlewaretoken"></div>
+		<form ng-show="status != 'success'" ng-submit="submit()" method="post" name="formPainel" class="ng-dirty ng-valid ng-valid-required">
+			{% csrf_token %}
 			<p>Você pode customizar o template para cada usuário, para todo resto este aqui será enviado.</p>
 			<fieldset ng-init="collapsed = false" class="module aligned collapse">
 				<h2>Email Template Padrão ( <a ng-click="collapsed = !collapsed" href="" class="ng-binding">Mostrar</a> )</h2>
@@ -165,7 +167,7 @@
 			</div>
 		</form>
 
-		<div ng-show="status == 'complete'" style="display: none;">
+		<div ng-show="status == 'success'" style="display: none;">
 			<p>Email(s) enviados com sucesso! <a href="/admin/base/professionalprofile/">Voltar para Perfis Profissionais</a></p>
 		</div>
 

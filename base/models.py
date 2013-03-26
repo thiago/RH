@@ -1,7 +1,8 @@
 # -- coding: utf-8 --
 from django.db import models
+from django.db.models.signals import post_save
+from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
-
 
 class Department(models.Model):
     name = models.CharField(max_length=60)
@@ -40,7 +41,7 @@ class Role(models.Model):
 class ProfessionalProfile(models.Model):
     department = models.ForeignKey(Department)
     role = models.ForeignKey(Role)
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, related_name='professional_profile', unique=True)
 
     def user_profile(self):
         return self.user.profile.admin_display_related()
@@ -78,3 +79,19 @@ class Note(models.Model):
         ordering = ['id']
         verbose_name = 'Nota'
         verbose_name_plural = 'Notas'
+
+
+#def create_user_profile(sender, instance, created, **kwargs):
+#	if created:
+#		user = ProfessionalProfile.objects.get_or_create(user=instance)[0]
+#		try:
+#			user.sites.add(Site.objects.get_current())
+#			user.save()
+#		except:
+#			pass
+#
+#post_save.connect(create_user_profile, sender=User)
+#User.profile = property(
+#	lambda u: ProfessionalProfile.objects.get_or_create(
+#		user=u)[
+#	          0])
